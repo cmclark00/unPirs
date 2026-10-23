@@ -33,6 +33,7 @@ CONFIG = {
     "level": 10,                  # 10 keeps him obedient for badge-less players
     "nature": "Relaxed",          # chill goat in sunglasses
     "gender": "male",             # male / female / genderless
+    "shiny": True,                # pink wool and sparkles when he's sent out
     "held_item": 240,             # 240 = BlackGlasses (Bulky's shades)
     "ball": 16,                   # 16 = Cherish Ball (the event ball)
     "moves": [29, 84, 178, 86],   # Headbutt, ThunderShock, Cotton Spore, Thunder Wave
@@ -48,7 +49,7 @@ CONFIG = {
     "met_location": 60,           # stored as (met - 3000); 60 -> "Pokemon Event"
 
     # The Wonder Card itself
-    "card_id": 1000,              # unique per event; official cards used 0-184
+    "card_id": 1001,              # unique per event; official cards used 0-184
     "title": "BULKY from Play2Win Games!",   # max 36 characters
     "description": [              # max ~36 characters per line
         "Thanks for visiting",
@@ -206,11 +207,21 @@ def is_shiny(pid, tid, sid):
     return (tid ^ sid ^ (pid >> 16) ^ (pid & 0xFFFF)) < 8
 
 
-def find_pid(nature, gender, ratio, tid, sid, start=0xB0117000):
-    """Deterministically pick a fixed, non-shiny PID with the wanted nature/gender."""
-    for pid in range(start, start + 0x100000):
+def find_pid(nature, gender, ratio, tid, sid, shiny, start=0xB0117000):
+    """Deterministically pick a fixed PID with the wanted nature/gender/shininess.
+
+    Shininess is judged against the gift's own OT IDs, which every recipient
+    keeps, so a fixed PID makes Bulky shiny (or not) in every game.
+    """
+    if shiny:
+        # Shiny when the two PID halves XOR to within 8 of TID ^ SID.
+        candidates = ((((tid ^ sid ^ low ^ k) << 16) | low)
+                      for low in range(start & 0xFFFF, 0x10000) for k in range(8))
+    else:
+        candidates = range(start, start + 0x100000)
+    for pid in candidates:
         if (pid % 25 == nature and gender_from_pid(pid, ratio) == gender
-                and not is_shiny(pid, tid, sid)):
+                and is_shiny(pid, tid, sid) == shiny):
             return pid
     raise RuntimeError("no PID found")
 
@@ -282,7 +293,7 @@ def build_pk4(cfg):
         # nickname flag stored in the same word -- keep them fixed.
         raise ValueError("ivs: six values 0-31, not all zero")
     level = cfg["level"]
-    pid = find_pid(nature, gender, sp["gender_ratio"], cfg["tid"], cfg["sid"])
+    pid = find_pid(nature, gender, sp["gender_ratio"], cfg["tid"], cfg["sid"], cfg["shiny"])
     ivs = cfg["ivs"]
 
     pk = bytearray(PK4_PARTY_SIZE)

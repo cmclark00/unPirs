@@ -21,10 +21,11 @@ the mascot:
 
 | Mascot | In game |
 |---|---|
-| Cream, woolly goat | **Mareep** (#179), the fluffy cream sheep, nicknamed **BULKY** |
+| Cream, woolly goat | **Mareep** (#179), the fluffy sheep, nicknamed **BULKY** |
 | Blue sunglasses | Holds **BlackGlasses** |
 | Gold chain, VIP energy | **Cherish Ball** (the official event ball) and the **Classic Ribbon** |
-| Laid-back attitude | **Relaxed** nature, always male, never shiny |
+| Laid-back attitude | **Relaxed** nature, always male |
+| Star of the show | **Shiny**: pink wool and a sparkle when he enters battle |
 | Big horns | Knows **Headbutt**, plus ThunderShock, Cotton Spore, Thunder Wave |
 | From the store | OT **P2WIN**, ID No. 00002, met at "Pokémon Event", level 10 |
 
@@ -108,7 +109,7 @@ Not every Wi-Fi chip works. A cheap USB adapter that supports injection is the u
 3. Load the game, walk into **any Poké Mart**, and talk to the delivery person in green
    to collect Bulky. Then **save**.
 
-Each save can receive card ID 1000 once. If you run a new event later (a different
+Each save can receive card ID 1001 once. If you run a new event later (a different
 Bulky or an item), give it a new `card_id`.
 
 ## Before going live
